@@ -1,9 +1,10 @@
 from strands import Agent
 import os
-import httpx
+from mcp_proxy_for_aws.client import aws_iam_streamablehttp_client
 from strands.tools.mcp import MCPClient
-from mcp.client.streamable_http import streamable_http_client
 from bedrock_agentcore import BedrockAgentCoreApp
+
+# https://strandsagents.com/docs/user-guide/concepts/tools/mcp-tools/#aws-iam
 
 MODEL_ID = "us.anthropic.claude-haiku-4-5-20251001-v1:0"
 
@@ -25,9 +26,10 @@ async def invoke(payload):
 	user_prompt = payload.get("prompt", "")
 
 	restaurant_mcp_client = MCPClient(
-		lambda: streamable_http_client(
-			GATEWAY_URL,
-			http_client=httpx.AsyncClient()
+		lambda: aws_iam_streamablehttp_client(
+			endpoint = GATEWAY_URL,
+			aws_region = "us-east-1",
+			aws_service = "bedrock-agentcore",
 		)
 	)
 
